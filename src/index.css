@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #06060a;
+  color: #e7e6ec;
+}
+
+::selection {
+  background: #a78bfa;
+  color: #06060a;
+}
+
+.font-display {
+  font-family: "Inter", system-ui, sans-serif;
+  letter-spacing: -0.03em;
+}
+
+/*
+ * Hero identity — "CARAFFA" / "DEVELOPER".
+ * Ported verbatim from the threejs-about-demo prototype (font-family, weight,
+ * leading, tracking, fill/stroke treatment). The only change permitted is a
+ * ~15% size increase, expressed through the same clamp() shape.
+ * Original: font-size: clamp(52px, 8vw, 112px); this: clamp(60px, 9.2vw, 130px).
+ */
+.hero-title {
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-weight: 850;
+  font-size: clamp(60px, 9.2vw, 130px);
+  line-height: 0.82;
+  letter-spacing: -0.075em;
+}
+
+.hero-title-fill {
+  color: #f5f7ff;
+}
+
+.hero-title-outline {
+  display: block;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(202, 197, 255, 0.6);
+}
+
+.hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #9d93ff;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.hero-eyebrow::before {
+  content: "";
+  width: 34px;
+  height: 1px;
+  background: #7c69ff;
+  box-shadow: 0 0 12px #7c69ff;
+}
+
+/*
+ * Shared band for the giant title and the portrait: a definite height so the
+ * photo (sized via h-full) and the vertically-centered title can overlap
+ * predictably, instead of scattering magic pixel offsets through the markup.
+ *
+ * This base rule is the mobile size, and it's deliberately much smaller than
+ * the desktop one below: on a narrow phone a desktop-sized portrait is wider
+ * than the short word it needs to sit beside, so it would swallow almost the
+ * whole line instead of just its tail. Shrinking here is a mobile-specific
+ * decision, not a scaled-down copy of the desktop value.
+ */
+.hero-visual {
+  height: clamp(150px, 42vw, 220px);
+}
+
+@media (min-width: 640px) {
+  /*
+   * The 43.9vw rate is deliberate: it makes this clamp reach its ceiling at
+   * the same ~1413px viewport where .hero-title's own clamp reaches 130px.
+   * Past that point font size, portrait size and portrait offset are all
+   * frozen together, so the title/photo overlap stops drifting on large
+   * and ultra-wide screens instead of slowly decoupling.
+   */
+  .hero-visual {
+    height: clamp(380px, 43.9vw, 620px);
+  }
+
+  /*
+   * Pulls the portrait in from the column's right edge so its silhouette
+   * actually overlaps the tail of "CARAFFA" / "DEVELOPER" instead of
+   * floating past them — measured against real glyph extents, not the
+   * stretched heading box. Same ~1413px ceiling as above, for the same reason.
+   */
+  .hero-portrait-wrap {
+    margin-right: clamp(40px, 21vw, 296px);
+  }
+}
+
+/* Extremely subtle film-grain, shared across the whole page for texture. */
+.grain-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+}
+
+@keyframes marquee-scroll {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee-scroll 22s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
