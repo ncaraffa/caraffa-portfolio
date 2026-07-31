@@ -136,6 +136,68 @@
   mask-size: 100% 100%;
 }
 
+/*
+ * The US flag, as atmosphere rather than illustration. It rides on `.atmo`, so
+ * it inherits the same guarantees as every other wash: over-scanned past its
+ * section on all four sides and feathered to zero by the shared elliptical
+ * mask, which is what stops it from ever reading as a rectangular image
+ * dropped onto the background.
+ *
+ * The SVG itself is already drawn in muted, violet-leaning tones; recognition
+ * comes from the structure (13 stripes, canton, 50 stars), not from saturated
+ * colour. On top of that: a light blur so no stripe edge is crisp, reduced
+ * saturation, and a low opacity that lands the white stripes only ~6% above
+ * the page's black — visible if you look for it, invisible if you don't.
+ */
+.flag-atmo {
+  background-image: url("/images/flag-us.svg");
+  background-repeat: no-repeat;
+  background-position: 62% 42%;
+  background-size: 145% auto;
+  filter: blur(2px) saturate(0.62);
+  opacity: 0.075;
+  will-change: transform;
+  transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  /* Pointer drift, written by the section; falls back to a resting 0. */
+  transform: translate3d(
+    calc(var(--flag-dx, 0) * 14px),
+    calc(var(--flag-dy, 0) * 9px),
+    0
+  );
+}
+
+/* A violet veil over the flag so its remaining colour is pulled the rest of
+   the way into the palette instead of sitting on top of it. */
+.flag-atmo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 70% 60% at 60% 45%,
+    rgb(var(--rgb-violet) / 0.5),
+    transparent 76%
+  );
+  mix-blend-mode: color;
+}
+
+@media (max-width: 639px) {
+  /* Quieter on small screens, where the flag would otherwise sit right under
+     the copy at a much larger relative scale. */
+  .flag-atmo {
+    opacity: 0.05;
+    background-size: 235% auto;
+    background-position: 68% 38%;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flag-atmo {
+    transform: none;
+    transition: none;
+  }
+}
+
 /* Smaller over-scan for the WebGL wrappers — same seam-proofing, less
    drawing buffer. Fill-rate budget, not aesthetics. */
 .atmo--canvas {

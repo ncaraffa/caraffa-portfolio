@@ -4,6 +4,7 @@ import { IntroSection } from "./components/IntroSection";
 import { AboutSection } from "./components/AboutSection";
 import { SkillsSection } from "./components/SkillsSection";
 import { ProjectsSection } from "./components/ProjectsSection";
+import { InternationalSection } from "./components/InternationalSection";
 import { ContactSection } from "./components/ContactSection";
 import { Section, GlowOrb } from "./components/Section";
 import { Logo } from "./components/Logo";
@@ -96,6 +97,7 @@ export default function App() {
       <AboutSection />
       <SkillsSection />
       <ProjectsSection />
+      <InternationalSection />
       <ContactSection />
 
       <footer className="relative py-8 text-center text-xs text-white/30">

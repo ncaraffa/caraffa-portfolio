@@ -20,13 +20,17 @@ export function SectionShell({
   children,
   className = "",
   id,
+  lang,
 }: {
   children: ReactNode;
   className?: string;
   id?: string;
+  /** Set when a section's content is in a different language than the page,
+      so screen readers switch pronunciation for it. */
+  lang?: string;
 }) {
   return (
-    <section id={id} className={`relative ${className}`}>
+    <section id={id} lang={lang} className={`relative ${className}`}>
       {children}
     </section>
   );
