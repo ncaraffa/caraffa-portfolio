@@ -1,7 +1,148 @@
 @import "tailwindcss";
 
+@theme {
+  /* The one true page background. Declared once (on body) — every opaque copy
+     of this colour was an occluder, see the note on .app-root below. */
+  --color-ink: #06060a;
+  --color-glow-violet: #8b5cf6;
+  --color-glow-lilac: #a78bfa;
+  --color-glow-indigo: #818cf8;
+  --color-glow-fuchsia: #c026d3;
+  --color-glow-mist: #c4b5fd;
+  --color-title: #f5f7ff;
+}
+
 :root {
   color-scheme: dark;
+
+  /* Channel triples for hand-authored gradients. Raw CSS gradients interpolate
+     in sRGB and can end on `/ 0` — same hue at zero alpha. Tailwind's own
+     gradient utilities interpolate in oklab and ending on the `transparent`
+     keyword routes through a desaturated grey midpoint, which is itself
+     visible as a seam on near-black. */
+  --rgb-violet: 139 92 246;
+  --rgb-lilac: 167 139 250;
+  --rgb-indigo: 129 140 248;
+  --rgb-fuchsia: 192 38 211;
+
+  /* The alpha ladder — the only place wash strength is decided. Capped at 0.12
+     for anything behind body copy: composited over ink that lands near
+     rgb(24,17,40), and white/55 over it stays about 5.6:1 (AA). */
+  --wash-1: 0.05;
+  --wash-2: 0.075;
+  --wash-3: 0.095;
+  --wash-4: 0.12;
+
+  /* How far every wash over-scans past its own section, vertically and
+     laterally. This is the seam guarantee: the cross-fade band at each section
+     boundary is 2x --atmo-over, so a boundary always sits mid-gradient on both
+     sides. Raising it can only push an edge further away, never create one. */
+  --atmo-over: clamp(180px, 26vh, 340px);
+  --atmo-bleed-x: clamp(64px, 12vw, 260px);
+
+  /* A single-layer four-side feather. `ellipse 50% 50%` puts the zero stop
+     exactly on all four edge midpoints, so one mask layer feathers left,
+     right, top and bottom at once — deliberately avoiding mask-composite,
+     which is confirmed to silently no-op in this engine. */
+  --atmo-feather: radial-gradient(
+    ellipse 50% 50% at 50% 50%,
+    #000 0%,
+    #000 44%,
+    rgb(0 0 0 / 0.62) 66%,
+    rgb(0 0 0 / 0.24) 84%,
+    rgb(0 0 0 / 0.05) 95%,
+    transparent 100%
+  );
+}
+
+/*
+ * `isolate` is load-bearing, not cosmetic. The ambient layer is a `-z-10`
+ * child; in a parent that is NOT a stacking context it gets hoisted to the
+ * nearest real one and painted in that ancestor's negative-z group (paint
+ * step 2) — while this element's own background paints at step 6, on top of
+ * it. That is why the entire ambient system (radial + orbs + grain) was
+ * invisible and the only purple on the page came from the section washes.
+ * `isolate` makes this element the hoist target so the layer paints above its
+ * background. Do NOT swap it for transform/filter/will-change: any of those
+ * also makes this a containing block for the fixed layer, which then stretches
+ * to full document height and gets clipped.
+ *
+ * overflow-x: clip rather than hidden — `hidden` creates a scroll container,
+ * and a scroll-container ancestor is the classic reason `position: sticky`
+ * silently stops sticking.
+ */
+.app-root {
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+}
+
+/*
+ * Atmosphere layer. Over-scans its own section on all four sides so its
+ * geometric edges land deep inside the neighbouring sections (and off-screen
+ * laterally), then feathers its alpha to zero on all four sides. The result is
+ * that no wash edge can ever coincide with a section boundary at any viewport
+ * width, and adjacent sections' washes physically overlap in the same band.
+ *
+ * `z-index: -1` on a shell that is deliberately NOT a stacking context means
+ * every wash on the page hoists to .app-root and paints together, before any
+ * content anywhere — which is what makes over-scanning by 340px safe: the
+ * plane physically cannot reach a later section's text.
+ */
+.atmo {
+  position: absolute;
+  z-index: -1;
+  top: calc(-1 * var(--atmo-over));
+  bottom: calc(-1 * var(--atmo-over));
+  left: calc(-1 * var(--atmo-bleed-x));
+  right: calc(-1 * var(--atmo-bleed-x));
+  pointer-events: none;
+  -webkit-mask-image: var(--atmo-feather);
+  mask-image: var(--atmo-feather);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+/*
+ * A wash that reaches much further up than a normal one, so the ink->violet
+ * ramp begins well inside the *previous* section rather than at the shared
+ * boundary. Pairs with the hero's floor band decaying to zero: the ramp starts
+ * under the hero, crosses the boundary mid-gradient, and resolves inside this
+ * section — so it terminates at no container edge at all.
+ */
+.atmo--bridge {
+  top: calc(-1 * clamp(440px, 68vh, 900px));
+}
+
+/*
+ * The hero's own decorative layers are `inset-0` inside a section that clips,
+ * so they end exactly on the hero's bottom edge. Two of them were still live
+ * when they got there — the fuchsia radial centred at 85% still carries about
+ * 0.07 alpha at y=100%, and the 3D canvas is cut flat — which is the last
+ * residual step at the boundary. This decays them to nothing well before the
+ * edge, so the hero hands off to the bridge wash mid-crossfade instead of
+ * stopping.
+ */
+.hero-ambient-fade {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, rgb(0 0 0 / 0.55) 68%, rgb(0 0 0 / 0.12) 88%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 42%, rgb(0 0 0 / 0.55) 68%, rgb(0 0 0 / 0.12) 88%, transparent 100%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* Smaller over-scan for the WebGL wrappers — same seam-proofing, less
+   drawing buffer. Fill-rate budget, not aesthetics. */
+.atmo--canvas {
+  top: calc(-1 * clamp(120px, 16vh, 220px));
+  bottom: calc(-1 * clamp(120px, 16vh, 220px));
+  left: calc(-1 * clamp(32px, 6vw, 140px));
+  right: calc(-1 * clamp(32px, 6vw, 140px));
 }
 
 html {
@@ -82,6 +223,11 @@ body {
  */
 .hero-visual {
   height: clamp(150px, 42vw, 220px);
+  /* Does two jobs at once: separates the title+portrait block from the
+     eyebrow above it, and nudges the portrait down toward where the 3D
+     backdrop has already thinned out to near-black — see .hero-portrait's
+     mask below for how the photo's own bottom edge disappears into it. */
+  margin-top: 20px;
 }
 
 @media (min-width: 640px) {
@@ -94,6 +240,7 @@ body {
    */
   .hero-visual {
     height: clamp(380px, 43.9vw, 620px);
+    margin-top: 40px;
   }
 
   /*
@@ -107,11 +254,113 @@ body {
   }
 }
 
-/* Extremely subtle film-grain, shared across the whole page for texture. */
+/*
+ * The portrait is a flat 2D layer on purpose — no tilt, no perspective.
+ *
+ * It needs two independent edge fades, because the source cutout is cropped
+ * by its own frame on two sides. Measured from the file's alpha channel
+ * (1229x1370):
+ *   - bottom edge: opaque across the full width  -> needs a fade
+ *   - RIGHT edge:  alpha 230..254 over the lower ~40% (the sleeve is sliced
+ *                  flat by the photo's frame)    -> needs a fade
+ *   - left edge:   alpha 0 everywhere            -> nothing there to fade
+ *
+ * The two fades sit on two *nested* elements (picture, then img) rather than
+ * as two layers on one element: `mask-composite` proved to silently no-op
+ * here, whereas nested masks each clip their own element and the visible
+ * result is inherently the intersection. Both boxes are verified to coincide
+ * exactly with the painted image rect (no object-contain letterboxing), so
+ * percentage stops land where they read.
+ *
+ * The right-edge ramp is intentionally non-linear: it holds full opacity
+ * until 80% so the arm keeps its mass, then eases out over the last fifth so
+ * it approaches zero gently — a linear ramp reaches zero at a constant rate
+ * and still reads as an edge.
+ */
+.hero-portrait,
+.hero-portrait img {
+  /* Pinned deliberately: the wrapper's drop-shadow paints outside the image
+     box, and out there an unpinned gradient would TILE — masking the strip
+     just past the faded edge back to opaque. Faded image, unfaded shadow, in
+     adjacent strips. */
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+.hero-portrait {
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, black 14%);
+  mask-image: linear-gradient(to top, transparent 0%, black 14%);
+}
+
+.hero-portrait img {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black 0%,
+    black 80%,
+    rgba(0, 0, 0, 0.86) 87%,
+    rgba(0, 0, 0, 0.52) 93.5%,
+    rgba(0, 0, 0, 0.18) 97.5%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    black 0%,
+    black 80%,
+    rgba(0, 0, 0, 0.86) 87%,
+    rgba(0, 0, 0, 0.52) 93.5%,
+    rgba(0, 0, 0, 0.18) 97.5%,
+    transparent 100%
+  );
+}
+
+/*
+ * The grounding shadow lives on the WRAPPER, not on the masked image. CSS
+ * applies filter *before* mask, so a drop-shadow on the img would be cast by
+ * the un-masked silhouette — i.e. by the very hard edge we are dissolving —
+ * and would leave a faint residual line inside the fade. On the (unmasked)
+ * wrapper it is cast by the already-faded result instead.
+ */
+.hero-portrait-wrap {
+  filter: drop-shadow(0 26px 40px rgba(0, 0, 0, 0.5));
+}
+
+/*
+ * Film grain, and it is doing real work: low-alpha purple ramping to nothing
+ * across ~700px of near-black quantises to a handful of 8-bit steps, and THAT
+ * banding is what makes an otherwise soft falloff read as a drawn line. The
+ * grain dithers it away.
+ *
+ * It has to live at the very top of the page (a `fixed` sibling at positive z),
+ * not inside the ambient layer: that layer is a stacking context and therefore
+ * an isolation group, so grain inside it could only blend with the orbs and
+ * never with the section washes. `overlay` was also arithmetically a no-op
+ * here — it reduces to multiply for backdrops under 50% luminance, and on
+ * near-black at 0.035 that is nothing. soft-light at 0.055 actually lifts.
+ */
 .grain-overlay {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity: 0.035;
-  mix-blend-mode: overlay;
+  opacity: 0.055;
+  mix-blend-mode: soft-light;
+}
+
+/*
+ * The header was a 64px-tall rectangle of translucent ink + backdrop-blur with
+ * no vertical fade, sitting right over the page's two brightest radials: a
+ * hard full-width luminance step at exactly y=64. Masking the veil fades the
+ * backdrop-filter out along with it (mask applies to the element's whole
+ * rendered output, filter included), so the blur has no edge either.
+ */
+.header-veil {
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
 }
 
 @keyframes marquee-scroll {
@@ -128,4 +377,66 @@ body {
   .marquee-track {
     animation: none;
   }
+}
+
+/* A slow, barely-there scale/opacity pulse for the ambient background glows
+   — the "site breathing" feel, kept subtle enough to read as atmosphere
+   rather than motion. */
+/* Animates transform only. It used to animate `opacity` too, which silently
+   clobbered each orb's own opacity utility — animations win over declarations
+   on the same property, so every orb was forced to the keyframe's value
+   regardless of the class set on it. */
+@keyframes glow-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.14);
+  }
+}
+
+.glow-breathe {
+  animation: glow-breathe 9s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow-breathe {
+    animation: none;
+  }
+}
+
+/* Violet thread under the header: brightest mid-span, zero at both ends, so it
+   reads as light catching an edge rather than as a drawn rule. */
+.header-thread {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgb(var(--rgb-violet) / 0.28) 32%,
+    rgb(var(--rgb-lilac) / 0.42) 50%,
+    rgb(var(--rgb-violet) / 0.28) 68%,
+    transparent 100%
+  );
+}
+
+/* Small animated underline for the header nav — grows from the center on hover/focus. */
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #a78bfa, transparent);
+  transform: scaleX(0);
+  transition: transform 0.25s ease-out;
+}
+
+.nav-link:hover::after,
+.nav-link:focus-visible::after {
+  transform: scaleX(1);
 }

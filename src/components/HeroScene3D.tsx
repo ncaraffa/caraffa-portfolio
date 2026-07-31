@@ -1,64 +1,16 @@
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Sparkles } from "@react-three/drei";
 import * as THREE from "three";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import { useIsTabVisible } from "../hooks/useIsTabVisible";
+import { useWebglSupported } from "../hooks/useWebglSupported";
+import { PointerParallaxGroup } from "./scenes/PointerParallaxGroup";
 
 const COLOR_VIOLET = "#a78bfa";
 const COLOR_PURPLE = "#8b5cf6";
 const COLOR_MAGENTA = "#c026d3";
 const COLOR_DUST = "#c4b5fd";
-
-function useWebglSupported(): boolean {
-  return useMemo(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      const canvas = document.createElement("canvas");
-      return !!(
-        window.WebGLRenderingContext &&
-        (canvas.getContext("webgl2") || canvas.getContext("webgl"))
-      );
-    } catch {
-      return false;
-    }
-  }, []);
-}
-
-/** Rotates its children gently toward the pointer position; a no-op when motion is disabled. */
-function PointerParallaxGroup({
-  children,
-  strength,
-}: {
-  children: ReactNode;
-  strength: number;
-}) {
-  const group = useRef<THREE.Group>(null);
-  const pointer = useRef({ x: 0, y: 0 });
-
-  useEffect(() => {
-    if (strength === 0) return;
-    const onMove = (e: PointerEvent) => {
-      pointer.current.x = (e.clientX / window.innerWidth) * 2 - 1;
-      pointer.current.y = (e.clientY / window.innerHeight) * 2 - 1;
-    };
-    window.addEventListener("pointermove", onMove, { passive: true });
-    return () => window.removeEventListener("pointermove", onMove);
-  }, [strength]);
-
-  useFrame((_, delta) => {
-    const g = group.current;
-    if (!g || strength === 0) return;
-    const targetY = pointer.current.x * strength;
-    const targetX = -pointer.current.y * strength * 0.6;
-    const ease = Math.min(1, delta * 2.2);
-    g.rotation.y += (targetY - g.rotation.y) * ease;
-    g.rotation.x += (targetX - g.rotation.x) * ease;
-  });
-
-  return <group ref={group}>{children}</group>;
-}
 
 function WireframeCore({ spin }: { spin: number }) {
   const mesh = useRef<THREE.Mesh>(null);
