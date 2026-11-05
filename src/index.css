@@ -237,7 +237,7 @@ body {
 .hero-poster-word {
   font-family: "Anton", "Impact", "Arial Narrow", sans-serif;
   /* Phones: sized to fit the screen; from sm up it overflows on purpose. */
-  font-size: 20vw;
+  font-size: 24.5vw;
   line-height: 0.82;
   letter-spacing: 0.005em;
   background: linear-gradient(to bottom, rgb(196 181 253 / 0.95) 0%, rgb(139 92 246 / 0.75) 45%, rgb(124 58 237 / 0) 92%);
