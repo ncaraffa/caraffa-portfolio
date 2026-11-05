@@ -32,7 +32,7 @@ export function Hero() {
         initial={{ opacity: 0, scale: 1.04 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1.2, ease: EASE }}
-        className="hero-poster-word pointer-events-none absolute inset-x-0 top-[14svh] select-none text-center sm:top-[11svh]"
+        className="hero-poster-word pointer-events-none absolute inset-x-0 top-[11svh] select-none text-center"
       >
         {t("PORTFÓLIO", "PORTFOLIO")}
       </motion.div>
@@ -44,13 +44,13 @@ export function Hero() {
         className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[40%] sm:h-[65%] bg-[linear-gradient(to_top,rgb(6_6_10/0)_0%,rgb(6_6_10/0.05)_8%,rgb(6_6_10/0.16)_18%,rgb(6_6_10/0.34)_30%,rgb(6_6_10/0.55)_46%,rgb(6_6_10/0.6)_62%,rgb(6_6_10/0.3)_82%,rgb(6_6_10/0)_100%)]"
       />
 
-      <div className="relative mx-auto flex min-h-[100svh] w-full max-w-[1400px] flex-col justify-end px-6 pb-10 pt-28 sm:px-10 lg:px-16 lg:pb-14">
+      <div className="relative mx-auto flex min-h-[calc(100svh-4rem)] w-full max-w-[1400px] flex-col justify-end px-6 pb-7 pt-20 sm:pb-10 sm:pt-28 sm:px-10 lg:px-16 lg:pb-14">
         {/* Portrait, centred, in front of the word */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.25, ease: EASE }}
-          className="hero-portrait-wrap pointer-events-none relative z-[1] -mb-[16svh] self-center h-[58svh] sm:absolute sm:bottom-0 sm:left-1/2 sm:z-auto sm:mb-0 sm:h-[80svh] sm:-translate-x-1/2 lg:h-[min(88svh,940px)]"
+          className="hero-portrait-wrap pointer-events-none relative z-[1] -mb-[10svh] self-center h-[46svh] sm:absolute sm:bottom-0 sm:left-1/2 sm:z-auto sm:mb-0 sm:h-[80svh] sm:-translate-x-1/2 lg:h-[min(88svh,940px)]"
         >
           <picture className="hero-portrait block h-full">
             <source srcSet="/photos/nicolas-hero-cutout.webp" type="image/webp" />
@@ -69,12 +69,12 @@ export function Hero() {
         <div className="relative z-[2]">
           {/* Name block — bottom left */}
           <div>
-            <motion.p {...rise(0.45)} className="font-script text-4xl text-violet-200 sm:text-5xl">
+            <motion.p {...rise(0.45)} className="font-script text-3xl text-violet-200 sm:text-5xl">
               {t("Olá, eu sou", "Hello, I'm")}
             </motion.p>
             <motion.h1
               {...rise(0.55)}
-              className="font-poster mt-1 text-[clamp(56px,8vw,118px)] leading-[0.88] text-white"
+              className="font-poster mt-1 text-[clamp(46px,8vw,118px)] leading-[0.88] text-white"
             >
               NICOLAS
               <br />
@@ -82,17 +82,17 @@ export function Hero() {
             </motion.h1>
             <motion.p
               {...rise(0.65)}
-              className="mt-4 font-mono text-[11px] uppercase tracking-[0.12em] text-violet-300 sm:text-sm sm:tracking-[0.22em]"
+              className="mt-3 font-mono text-[11px] uppercase tracking-[0.12em] text-violet-300 sm:text-sm sm:tracking-[0.22em]"
             >
               {t("Desenvolvedor full-stack & agentes de IA", "Full-stack developer & AI agents")}
             </motion.p>
-            <motion.p {...rise(0.72)} className="mt-4 max-w-sm text-sm leading-relaxed text-white/60 sm:text-base">
+            <motion.p {...rise(0.72)} className="mt-3 max-w-sm text-sm leading-relaxed text-white/60 sm:mt-4 sm:text-base">
               {t(
                 "Construo produtos digitais e agentes de IA — da ideia ao deploy, com código que resolve problema real.",
                 "I build digital products and AI agents — from idea to deploy, with code that solves real problems.",
               )}
             </motion.p>
-            <motion.div {...rise(0.8)} className="mt-7 flex flex-wrap items-center gap-3">
+            <motion.div {...rise(0.8)} className="mt-5 flex flex-wrap items-center gap-3 sm:mt-7">
               <a
                 href="#projetos"
                 className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-white/90 hover:shadow-[0_0_28px_2px_rgba(167,139,250,0.35)] active:scale-[0.97]"
