@@ -236,13 +236,20 @@ body {
 /* The giant word behind the portrait: violet at the top, dissolving downward. */
 .hero-poster-word {
   font-family: "Anton", "Impact", "Arial Narrow", sans-serif;
-  font-size: clamp(120px, 26vw, 560px);
+  /* Phones: sized to fit the screen; from sm up it overflows on purpose. */
+  font-size: 20vw;
   line-height: 0.82;
   letter-spacing: 0.005em;
   background: linear-gradient(to bottom, rgb(196 181 253 / 0.95) 0%, rgb(139 92 246 / 0.75) 45%, rgb(124 58 237 / 0) 92%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+@media (min-width: 640px) {
+  .hero-poster-word {
+    font-size: clamp(120px, 26vw, 560px);
+  }
 }
 
 /*

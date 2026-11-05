@@ -41,16 +41,16 @@ export function Hero() {
           draws the edge of a box (sides) or of the section (bottom). */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[65%] bg-[linear-gradient(to_top,rgb(6_6_10/0)_0%,rgb(6_6_10/0.05)_8%,rgb(6_6_10/0.16)_18%,rgb(6_6_10/0.34)_30%,rgb(6_6_10/0.55)_46%,rgb(6_6_10/0.6)_62%,rgb(6_6_10/0.3)_82%,rgb(6_6_10/0)_100%)]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-[40%] sm:h-[65%] bg-[linear-gradient(to_top,rgb(6_6_10/0)_0%,rgb(6_6_10/0.05)_8%,rgb(6_6_10/0.16)_18%,rgb(6_6_10/0.34)_30%,rgb(6_6_10/0.55)_46%,rgb(6_6_10/0.6)_62%,rgb(6_6_10/0.3)_82%,rgb(6_6_10/0)_100%)]"
       />
 
-      <div className="relative mx-auto flex min-h-[100svh] w-full max-w-[1400px] flex-col justify-end px-6 pb-10 pt-24 sm:px-10 lg:px-16 lg:pb-14">
+      <div className="relative mx-auto flex min-h-[100svh] w-full max-w-[1400px] flex-col justify-end px-6 pb-10 pt-28 sm:px-10 lg:px-16 lg:pb-14">
         {/* Portrait, centred, in front of the word */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.25, ease: EASE }}
-          className="hero-portrait-wrap pointer-events-none absolute bottom-0 left-1/2 h-[64svh] -translate-x-1/2 sm:h-[80svh] lg:h-[min(88svh,940px)]"
+          className="hero-portrait-wrap pointer-events-none relative z-[1] -mb-[16svh] self-center h-[58svh] sm:absolute sm:bottom-0 sm:left-1/2 sm:z-auto sm:mb-0 sm:h-[80svh] sm:-translate-x-1/2 lg:h-[min(88svh,940px)]"
         >
           <picture className="hero-portrait block h-full">
             <source srcSet="/photos/nicolas-hero-cutout.webp" type="image/webp" />
@@ -82,7 +82,7 @@ export function Hero() {
             </motion.h1>
             <motion.p
               {...rise(0.65)}
-              className="mt-4 font-mono text-xs uppercase tracking-[0.22em] text-violet-300 sm:text-sm"
+              className="mt-4 font-mono text-[11px] uppercase tracking-[0.12em] text-violet-300 sm:text-sm sm:tracking-[0.22em]"
             >
               {t("Desenvolvedor full-stack & agentes de IA", "Full-stack developer & AI agents")}
             </motion.p>
