@@ -1,112 +1,103 @@
-import { motion } from "framer-motion";
-import { Languages, Clock, Globe2 } from "lucide-react";
-import { SectionShell, Column, Wash } from "./Section";
+import { motion, useReducedMotion } from "framer-motion";
+import type { ReactNode } from "react";
+import { SectionShell, Wash } from "./Section";
 import { usePointerDrift } from "../hooks/usePointerDrift";
 
-const HIGHLIGHTS = [
-  {
-    icon: Languages,
-    label: "Fluent English",
-    desc: "Natural, everyday conversation — not a phrasebook.",
-  },
-  {
-    icon: Clock,
-    label: "10+ years",
-    desc: "Learned young, almost alongside Portuguese.",
-  },
-  {
-    icon: Globe2,
-    label: "Global collaboration",
-    desc: "Requirements, trade-offs and technical decisions, explained clearly.",
-  },
-];
+const EASE = [0.22, 1, 0.36, 1] as const;
 
+function Reveal({ i, children, className = "" }: { i: number; children: ReactNode; className?: string }) {
+  const reduce = useReducedMotion();
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: reduce ? 0 : 12 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.48, delay: i * 0.06, ease: EASE }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/*
+ * Editorial, asymmetric (Codex's direction): copy on a 7-col left, and an open
+ * typographic signature — "Fluent / English" — on the 5-col right, with the
+ * other two facts under a hairline. Static once revealed: nothing here is
+ * clickable, so nothing pretends to be. The US flag layer is untouched.
+ */
 export function InternationalSection() {
   const driftRef = usePointerDrift<HTMLDivElement>();
 
   return (
-    <SectionShell id="international" className="py-28 sm:py-32" lang="en">
+    <SectionShell id="international" className="py-16 sm:py-28" lang="en">
       <Wash background="radial-gradient(ellipse 60% 52% at 30% 34%, rgb(var(--rgb-indigo) / var(--wash-3)), transparent 74%)" />
       <Wash background="radial-gradient(ellipse 48% 44% at 78% 70%, rgb(var(--rgb-violet) / var(--wash-2)), transparent 76%)" />
       {/* The flag rides the shared atmosphere layer, so it is over-scanned past
           this section and feathered to zero on all four sides. */}
       <div ref={driftRef} aria-hidden className="atmo flag-atmo" />
 
-      <Column>
-        <div className="max-w-2xl">
-          <motion.span
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.5 }}
-            className="text-xs font-medium uppercase tracking-[0.2em] text-violet-300/80"
-          >
-            Global communication
-          </motion.span>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 18 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.6, delay: 0.06, ease: "easeOut" }}
-            className="font-display mt-3 text-4xl font-semibold leading-[1.08] text-white sm:text-5xl"
-          >
-            Not from Brazil?
-            <br />
-            <span className="text-white/45">No problem.</span>
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.55, delay: 0.12 }}
-            className="mt-6 text-lg leading-relaxed text-white/70"
-          >
-            English has been part of my life for more than ten years. I started
-            learning it very young — almost alongside Portuguese — and today I
-            speak it fluently and naturally.
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 0.55, delay: 0.18 }}
-            className="mt-4 leading-relaxed text-white/55"
-          >
-            Wherever you are based, communication won't be the bottleneck. I can
-            talk ideas through, understand what a project actually needs,
-            collaborate all the way through development, and explain technical
-            decisions clearly in English.
-          </motion.p>
+      <div className="relative mx-auto grid w-full max-w-[1120px] gap-8 px-6 sm:px-10 lg:grid-cols-12 lg:items-center lg:gap-16">
+        {/* Left — 7 cols */}
+        <div className="lg:col-span-7">
+          <Reveal i={0}>
+            <span className="text-xs font-medium uppercase tracking-[0.14em] text-violet-300/80">
+              Global communication
+            </span>
+          </Reveal>
+          <Reveal i={1}>
+            <h2 className="font-display mt-4 text-[clamp(36px,4.5vw,64px)] font-semibold leading-[1.05] text-white">
+              Not from Brazil?
+              <br />
+              <span className="text-[#C4B5FD]">No problem.</span>
+            </h2>
+          </Reveal>
+          <Reveal i={2}>
+            <p className="mt-7 max-w-[48ch] text-[17px] leading-[1.7] text-white/70 sm:text-lg">
+              English has been part of my life for more than ten years. I started learning it very young —
+              almost alongside Portuguese — and today I speak it fluently and naturally.
+            </p>
+          </Reveal>
+          <Reveal i={3}>
+            <p className="mt-4 max-w-[48ch] text-[17px] leading-[1.7] text-white/55 sm:text-lg">
+              Wherever you are based, communication won't be the bottleneck. I can talk ideas through,
+              understand what a project actually needs, collaborate all the way through development, and
+              explain technical decisions clearly in English.
+            </p>
+          </Reveal>
         </div>
 
-        <div
-          className="mt-12 grid gap-4 sm:grid-cols-3"
-          style={{ perspective: 1000 }}
-        >
-          {HIGHLIGHTS.map(({ icon: Icon, label, desc }, i) => (
-            <motion.div
-              key={label}
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              whileHover={{ y: -4, rotateX: 1.5, rotateY: -1.5 }}
-              transition={{ duration: 0.45, delay: 0.22 + i * 0.07 }}
-              className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 transition-colors hover:border-violet-400/30 hover:bg-white/[0.07] hover:shadow-[0_0_30px_-8px_rgb(var(--rgb-violet)/0.4)]"
-            >
-              <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl border border-violet-400/30 bg-violet-400/10">
-                <Icon size={16} className="text-violet-300" />
-              </span>
-              <h3 className="font-display text-sm font-semibold text-white">
-                {label}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-white/50">{desc}</p>
-            </motion.div>
-          ))}
+        {/* Right — 5 cols: the typographic signature */}
+        <div className="lg:col-span-5">
+          <Reveal i={4}>
+            <div className="font-poster text-[clamp(72px,9vw,132px)] leading-[0.86] text-white">
+              Fluent
+              <br />
+              <span className="text-[#C4B5FD]">English</span>
+            </div>
+            <p className="mt-4 text-sm text-white/50">Natural, everyday conversation — not a phrasebook.</p>
+          </Reveal>
+
+          <Reveal i={5}>
+            <div className="mt-8 h-px w-full bg-gradient-to-r from-white/25 via-white/10 to-transparent" />
+          </Reveal>
+
+          <div className="mt-8 grid grid-cols-2 gap-6">
+            <Reveal i={6}>
+              <div className="font-poster text-4xl text-white">10+ years</div>
+              <p className="mt-2 text-sm leading-relaxed text-white/50">
+                Learned young, almost alongside Portuguese.
+              </p>
+            </Reveal>
+            <Reveal i={7}>
+              <div className="font-poster text-4xl text-white">Global</div>
+              <p className="mt-2 text-sm leading-relaxed text-white/50">
+                Collaboration — requirements, trade-offs and technical decisions, explained clearly.
+              </p>
+            </Reveal>
+          </div>
         </div>
-      </Column>
+      </div>
     </SectionShell>
   );
 }

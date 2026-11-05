@@ -36,16 +36,22 @@ export function SectionShell({
   );
 }
 
-/** The 1024px reading measure. Content only — never decoration. */
+/** Content measure, aligned with the hero (1400px; `wide` for showcases). Content only — never decoration. */
 export function Column({
   children,
   className = "",
+  wide = false,
 }: {
   children: ReactNode;
   className?: string;
+  wide?: boolean;
 }) {
   return (
-    <div className={`relative mx-auto max-w-5xl px-6 ${className}`}>{children}</div>
+    <div
+      className={`relative mx-auto px-6 sm:px-10 lg:px-16 ${wide ? "max-w-[1680px]" : "max-w-[1400px]"} ${className}`}
+    >
+      {children}
+    </div>
   );
 }
 
@@ -95,7 +101,7 @@ export function Section({
   id?: string;
 }) {
   return (
-    <section id={id} className={`relative mx-auto max-w-5xl px-6 ${className}`}>
+    <section id={id} className={`relative mx-auto max-w-[1400px] px-6 sm:px-10 lg:px-16 ${className}`}>
       {children}
     </section>
   );
