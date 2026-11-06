@@ -33,7 +33,7 @@ const PROJECTS = [
     desc: { pt: "Site do corretor de imóveis Nicola Caraffa em Corumbá e Campo Grande (MS), com catálogo de imóveis, simulador de financiamento e painel administrativo.", en: "Website for real estate agent Nicola Caraffa in Corumbá and Campo Grande (MS, Brazil), with a property catalog, mortgage simulator and admin panel." },
     tags: ["HTML", "CSS", "JavaScript", "Appwrite"],
     image: "/projects/ncimoveis.webp",
-    url: "https://ncimoveis.vercel.app",
+    url: "https://caraffaimoveis.com.br",
     repo: "https://github.com/ncaraffa/NCImoveis",
     glow: "var(--rgb-indigo)",
   },
